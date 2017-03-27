@@ -4,9 +4,13 @@ A tool for creating One Time Pads. Use as input for passwords or transmitting en
 
 ## Usage 
 
-    $ otp --num-blocks=100 --block-size=32
+    $ pad 
 
-Generate 100 blocks of 32 bytes.
+Generate 24 lines of 80 character wide blocks.
+
+    $ pad <num_lines>
+
+Generate <num_lines> of 80 character wide blocks. 
 
 ### Platforms
 
