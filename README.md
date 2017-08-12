@@ -14,7 +14,7 @@ Generate <num_lines> of 80 character wide blocks.
 
 ### Platforms
 
-Linux and macOS, and Windows Subsystem for Linux.
+Linux and macOS, and Windows Subsystem for Linux. Probably works on BSDs as well, but this is untested.
 
 ### Contributors
 
