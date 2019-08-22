@@ -1,8 +1,10 @@
+#include <algorithm>
 #include <cstdint>
 #include <iostream>
 #include <stdlib.h>
 #include <string>
 #include <sstream>
+#include <cstring>
 
 namespace otp {
 
@@ -11,12 +13,31 @@ namespace otp {
         Config()
             : blockSize(80)
             , numBlocks(0)
+			, binary(false)
         {
         }
 
         std::size_t blockSize;
         std::size_t numBlocks;
+		bool binary; 
     };
+
+	void readBlockSizeAndNumBlocks(Config& config, size_t pos, size_t num, char const * const argv[])
+	{
+		std::stringstream ss;
+		ss << argv[pos];
+		ss >> config.numBlocks;
+
+		if(pos+1 < num) 
+		{
+			std::stringstream ss2;
+			ss2 << argv[pos+1];
+			ss2 >> config.blockSize;
+		}
+
+		std::cerr << "numblocks=" << config.numBlocks
+			<< "blockSize" << config.blockSize << "\n";
+	}
 
     Config parseOptions(int argc, char const * const argv[])
     {
@@ -28,9 +49,15 @@ namespace otp {
             return config;
         }
 
-        std::stringstream ss;
-        ss << argv[1];
-        ss >> config.numBlocks; 
+		if(std::strcmp(argv[1], "--binary") == 0)
+		{
+			config.binary = true;
+			readBlockSizeAndNumBlocks(config, 2, argc, argv);
+		}
+		else 
+		{
+			readBlockSizeAndNumBlocks(config, 1, argc, argv);	
+		}
 
         if(config.numBlocks == 0)
         {
@@ -62,7 +89,7 @@ namespace otp {
         return c;
     }
 
-    Block filterUnprintable(Block&& block)
+    Block filterUnprintable(Block& block)
     {
         std::for_each(block.begin(), block.end(), [](char& c) {
 
@@ -83,9 +110,15 @@ int main(int argc, char const * const argv[])
 
     for(std::size_t i = 0; i < config.numBlocks; ++i)
     {
-        std::cout << filterUnprintable(createBlock(config)) << "\n";
+		auto block = createBlock(config);
+		if(!config.binary) 
+		{
+			block = filterUnprintable(block);
+		}
+
+        std::cout << block << (config.binary ? "" : "\n");
     }
- 
-    std::cout << std::endl;
+
+    std::cout << (config.binary ? "" : "\n");
     return 0;
 }
